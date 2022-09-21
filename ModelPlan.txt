@@ -1,0 +1,19 @@
+// todo - sort the graphs by the most positive trends
+// todo - include variation in your equation to find the best trend
+// todo - check if you can host the application online so it runs everytime to monitor the data
+
+
+// create an object ETFPoint with attribute, closing date and price
+// DateTime closingDate;
+// Double price
+
+// create an object ETFCurve with two attributes, curve name and an array that stores prices,
+// curveIdentity
+// ArrayList<ETFPoint> curveData;
+
+// create ETFCurves with one attribute, an array that stores array
+// ArrayList<ETFCurve> curves
+
+// clean the code an build functions
+// you have the data and you can drawn a graph. you can start with you calculations and show any trends on the graph.
+// you can use angular to link everything to the ui and myabe host at a later stage
