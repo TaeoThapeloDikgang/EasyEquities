@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f0dc4544-80a2-41e8-adb5-774280e4e280" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ModelPlan.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/model/ETFCurve.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/model/ETFCurves.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/model/ETFPoint.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/controller/LaunchBrowser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controller/LaunchBrowser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -86,11 +81,19 @@
       <option name="project" value="LOCAL" />
       <updated>1663182305375</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="breaking the code into methods">
+      <created>1663782393972</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1663782393972</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+    <MESSAGE value="breaking the code into methods" />
+    <option name="LAST_COMMIT_MESSAGE" value="breaking the code into methods" />
   </component>
 </project>

@@ -104,6 +104,8 @@ public class LaunchBrowser extends JFrame {
             }
             conn.disconnect();
             scanner.close();
+            // todo - check what structure is this inline. im suspecting something fishy here.
+            System.out.println("######row " + inline.substring(5));
             return inline;
         }
     }
@@ -113,32 +115,51 @@ public class LaunchBrowser extends JFrame {
         return point;
     }
 
-    public static ETFCurve createETFCurve(JSONArray jsonArray, String fundId, String httpContentResponse) throws Exception {
-        ArrayList<ETFPoint> fundData = new ArrayList<ETFPoint>();
+    public static ETFCurve createETFCurve(JSONArray jsonArray, String fundId, String fundDataString) throws Exception {
+        ArrayList<ETFPoint> fundDataArray = new ArrayList<ETFPoint>();
         if (jsonArray != null) {
             //Iterating JSON array
             for (int j = 0; j<jsonArray.length();j++){
                 String jsonString = jsonArray.get(j).toString();
                 ETFPoint point = createETFPointFromJsonString(jsonString);
-                fundData.add(point);
+                fundDataArray.add(point);
             }
         }
-        ETFCurve curve = new ETFCurve(fundId, fundData, httpContentResponse);
+        ETFCurve curve = new ETFCurve(fundId, fundDataArray, fundDataString);
 
         return curve;
     }
 
-    public static ETFCurves createETFCurves(ArrayList<ETFCurve> curves) {
-        ETFCurves etfCurves = new ETFCurves(curves);
-        return  etfCurves;
-    }
-
-    public static ETFCurves getAPIData(Map<String, List<WebElement>> elementsArrays) throws Exception { // create EFTPoint, ETFCurve, and ETFCurves
+    public static ETFCurves createETFCurves(Map<String, String> responses, Map<String, List<WebElement>> elementsArrays ) throws Exception {
 
         List<WebElement> fundTags = elementsArrays.get("fundTags");
         List<WebElement> fundNames = elementsArrays.get("fundNames");
 
-        ArrayList curves = new ArrayList<ETFCurve>();
+
+        ArrayList<ETFCurve> etfCurveArray = new ArrayList<>();
+        for (Map.Entry<String, String> pair : responses.entrySet()) {
+            //convert the json string to json object
+            JSONObject jsnobject = new JSONObject(pair.getValue());
+
+            // convert json object to an array
+            JSONArray jsonArray = jsnobject.getJSONArray("Prices");
+
+            ETFCurve curve = createETFCurve(jsonArray, pair.getKey(), pair.getValue());
+            etfCurveArray.add(curve);
+        }
+
+        ETFCurves etfCurves = new ETFCurves(etfCurveArray);
+
+        return  etfCurves;
+    }
+
+    public static Map<String, String>  getAPIData(Map<String, List<WebElement>> elementsArrays) throws Exception { // create EFTPoint, ETFCurve, and ETFCurves
+
+        List<WebElement> fundTags = elementsArrays.get("fundTags");
+        List<WebElement> fundNames = elementsArrays.get("fundNames");
+
+        Map<String, String> responses = new HashMap<>();
+
         for (int i=0; i<fundTags.size(); i++) {
 
             String fundName = fundNames.get(i).getText();
@@ -146,31 +167,10 @@ public class LaunchBrowser extends JFrame {
             String fundDataTargetCode = fundTags.get(i).getAttribute("data-target");
             String fundId = fundName + " - " + fundCode;
 
-            String httpContentResponse = getHttpContentResponse(fundDataTargetCode);
-
-             // todo - 2. add httpContentResponse to array, each item is an http response.
-
-             // todo - 3. data from here downwards, can be manipulated to obtaine what we what from the strings and create our objects
-
-
-
-            // convert the json string to json object
-            JSONObject jsnobject = new JSONObject(httpContentResponse);
-
-            // convert json object to an array
-            JSONArray jsonArray = jsnobject.getJSONArray("Prices");
-
-            // add this array to another array and return it
-
-            ETFCurve curve = createETFCurve(jsonArray, fundId, httpContentResponse);
-
-            curves.add(curve);
-
+            String fundData = getHttpContentResponse(fundDataTargetCode);
+            responses.put(fundId, fundData);
         }
-
-        ETFCurves etfCurves = createETFCurves(curves);
-
-        return etfCurves;
+        return responses;
     }
 
     public static void showGraphWindow(ETFCurves etfCurves) {
@@ -192,27 +192,22 @@ public class LaunchBrowser extends JFrame {
         // get browser elements needed
         Map<String, List<WebElement>> elementsArrays = getWebElements();
 
-        // todo - 1. get api data as row strings in an array. go up for todo 2.
+        // get api data as row strings in an array
+        // todo - check if the data you get from the api is correct. im suspecting something
+        Map<String, String> httpContentResponses= getAPIData(elementsArrays);
 
-        // todo - 4. this down here will change after doing point 2. and 3.
-        ETFCurves etfCurves = getAPIData(elementsArrays);
-
-        // create your ojects
-
-        // put all objects under parent object
-
-
-
-        driver.close();
-        driver.quit();
-
-
-        System.out.println("My curves "+ etfCurves.getCurves().size());
-        for (ETFCurve curve : etfCurves.getCurves()) {
-            System.out.println(curve.toString());
-            System.out.println("########################################################################################################################");
-        }
-
-        showGraphWindow(etfCurves);
+//        // create ETFCurves object.
+//        ETFCurves etfCurves = createETFCurves(httpContentResponses, elementsArrays);
+//
+//        driver.close();
+//        driver.quit();
+//
+//        System.out.println("My curves "+ etfCurves.getCurves().size());
+//        for (ETFCurve curve : etfCurves.getCurves()) {
+//            System.out.println(curve.toString());
+//            System.out.println("########################################################################################################################");
+//        }
+//
+//        showGraphWindow(etfCurves);
     }
 }
