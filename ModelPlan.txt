@@ -1,5 +1,7 @@
-// todo - sort the graphs by the most positive trends
-// todo - include variation in your equation to find the best trend
+// todo - using java show only one graph and calculate the trend and variation and put it next to the graph
+// todo - create multiple graphs, one for each fund and put them next to each other
+// todo - sort the graphs by the most positive trends and variation
+// todo - create a resful api, package, and deploy using wildlfy
 // todo - check if you can host the application online so it runs everytime to monitor the data
 
 

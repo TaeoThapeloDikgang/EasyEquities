@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f0dc4544-80a2-41e8-adb5-774280e4e280" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ModelPlan.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ModelPlan.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/controller/LaunchBrowser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controller/LaunchBrowser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -95,13 +96,21 @@
       <option name="project" value="LOCAL" />
       <updated>1663869321486</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="checked the validity of the data reserved.">
+      <created>1664481380959</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1664481380959</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="breaking the code into methods" />
     <MESSAGE value="Breaking the code into methods complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="Breaking the code into methods complete" />
+    <MESSAGE value="checked the validity of the data reserved." />
+    <option name="LAST_COMMIT_MESSAGE" value="checked the validity of the data reserved." />
   </component>
 </project>

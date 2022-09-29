@@ -27,41 +27,33 @@ import java.util.concurrent.TimeUnit;
 public class LaunchBrowser extends JFrame {
     private static ChromeOptions options;
     private static WebDriver driver;
-//    private static List<WebElement> fundTags;
-//    private static List<WebElement> fundNames;
-//    private static URL url;
-//    private static HttpURLConnection conn;
-//    private static int responseCode;
-//    private static String responseMessage;
-//    private static ETFCurves etfCurves;
     public static String dir = System.getProperty("user.dir"); //Getting user Directory
     public static String chromedriver = dir + "/drivers/chromedriver";//creating Chromedriver Directory
 
-    public static int n = 1;
+    public static void main(String[] args) throws Exception {
 
-    public LaunchBrowser(String title, ETFCurves etfCurves) {
-        super(title);
-        // Create dataset
-        DefaultCategoryDataset dataset = createDataset(etfCurves);
+        // setup browser
+        setUpBrowser();
 
-        // Create chart
-        JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, false, false);
+        // get browser elements needed
+        Map<String, List<WebElement>> elementsArrays = getWebElements();
 
-        ChartPanel panel = new ChartPanel(chart);
-        setContentPane(panel);
-    }
+        // get api data as strings in an array
+        Map<String, String> httpContentResponses= getAPIData(elementsArrays);
 
-    private DefaultCategoryDataset createDataset(ETFCurves etfCurves) {
+        // create ETFCurves object.
+        ETFCurves etfCurves = createETFCurves(httpContentResponses, elementsArrays);
 
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        driver.close();
+        driver.quit();
 
-        for (ETFCurve curve : etfCurves.getCurves()) { // for each curve
-            for (ETFPoint point: curve.getCurveData()) { // for each point in a curve
-                dataset.addValue(point.getPrice(), curve.getCurveId(), point.getClosingDate().toString());
-            }
+        // print curves out for verification
+        System.out.println("My curves "+ etfCurves.getCurves().size());
+        for (ETFCurve curve : etfCurves.getCurves()) {
+            System.out.println(curve.toString().substring(0,100));
         }
 
-        return dataset;
+        showGraphWindow(etfCurves);
     }
 
     public static void setUpBrowser() { // create options and driver
@@ -84,6 +76,26 @@ public class LaunchBrowser extends JFrame {
         elementsArrays.put("fundTags", fundTags);
         elementsArrays.put("fundNames", fundNames);
         return elementsArrays;
+    }
+
+    public static Map<String, String>  getAPIData(Map<String, List<WebElement>> elementsArrays) throws Exception { // create EFTPoint, ETFCurve, and ETFCurves
+
+        List<WebElement> fundTags = elementsArrays.get("fundTags");
+        List<WebElement> fundNames = elementsArrays.get("fundNames");
+
+        Map<String, String> responses = new HashMap<>();
+
+        for (int i=0; i<fundTags.size(); i++) {
+
+            String fundName = fundNames.get(i).getText();
+            String fundCode = fundTags.get(i).getAttribute("data-jsecode");
+            String fundDataTargetCode = fundTags.get(i).getAttribute("data-target");
+            String fundId = fundCode + " - " + fundName;
+
+            String fundData = getHttpContentResponse(fundDataTargetCode);
+            responses.put(fundId, fundData);
+        }
+        return responses;
     }
 
     public static String getHttpContentResponse(String fundDataTargetCode) throws Exception {
@@ -111,26 +123,6 @@ public class LaunchBrowser extends JFrame {
         }
     }
 
-    public static ETFPoint createETFPointFromJsonString(String jsonString) throws Exception {
-        ETFPoint point = new ObjectMapper().readValue(jsonString, ETFPoint.class);
-        return point;
-    }
-
-    public static ETFCurve createETFCurve(JSONArray jsonArray, String fundId, String fundDataString) throws Exception {
-        ArrayList<ETFPoint> fundDataArray = new ArrayList<ETFPoint>();
-        if (jsonArray != null) {
-            //Iterating JSON array
-            for (int j = 0; j<jsonArray.length();j++){
-                String jsonString = jsonArray.get(j).toString();
-                ETFPoint point = createETFPointFromJsonString(jsonString);
-                fundDataArray.add(point);
-            }
-        }
-        ETFCurve curve = new ETFCurve(fundId, fundDataArray, fundDataString);
-
-        return curve;
-    }
-
     public static ETFCurves createETFCurves(Map<String, String> responses, Map<String, List<WebElement>> elementsArrays ) throws Exception {
 
         List<WebElement> fundTags = elementsArrays.get("fundTags");
@@ -154,24 +146,24 @@ public class LaunchBrowser extends JFrame {
         return  etfCurves;
     }
 
-    public static Map<String, String>  getAPIData(Map<String, List<WebElement>> elementsArrays) throws Exception { // create EFTPoint, ETFCurve, and ETFCurves
-
-        List<WebElement> fundTags = elementsArrays.get("fundTags");
-        List<WebElement> fundNames = elementsArrays.get("fundNames");
-
-        Map<String, String> responses = new HashMap<>();
-
-        for (int i=0; i<fundTags.size(); i++) {
-
-            String fundName = fundNames.get(i).getText();
-            String fundCode = fundTags.get(i).getAttribute("data-jsecode");
-            String fundDataTargetCode = fundTags.get(i).getAttribute("data-target");
-            String fundId = fundCode + " - " + fundName;
-
-            String fundData = getHttpContentResponse(fundDataTargetCode);
-            responses.put(fundId, fundData);
+    public static ETFCurve createETFCurve(JSONArray jsonArray, String fundId, String fundDataString) throws Exception {
+        ArrayList<ETFPoint> fundDataArray = new ArrayList<ETFPoint>();
+        if (jsonArray != null) {
+            //Iterating JSON array
+            for (int j = 0; j<jsonArray.length();j++){
+                String jsonString = jsonArray.get(j).toString();
+                ETFPoint point = createETFPointFromJsonString(jsonString);
+                fundDataArray.add(point);
+            }
         }
-        return responses;
+        ETFCurve curve = new ETFCurve(fundId, fundDataArray, fundDataString);
+
+        return curve;
+    }
+
+    public static ETFPoint createETFPointFromJsonString(String jsonString) throws Exception {
+        ETFPoint point = new ObjectMapper().readValue(jsonString, ETFPoint.class);
+        return point;
     }
 
     public static void showGraphWindow(ETFCurves etfCurves) {
@@ -185,29 +177,28 @@ public class LaunchBrowser extends JFrame {
         });
     }
 
-    public static void main(String[] args) throws Exception {
+    public LaunchBrowser(String title, ETFCurves etfCurves) {
+        super(title);
+        // Create dataset
+        DefaultCategoryDataset dataset = createDataset(etfCurves);
 
-        // setup browser
-        setUpBrowser();
+        // Create chart
+        JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, false, false);
 
-        // get browser elements needed
-        Map<String, List<WebElement>> elementsArrays = getWebElements();
+        ChartPanel panel = new ChartPanel(chart);
+        setContentPane(panel);
+    }
 
-        // get api data as strings in an array
-        Map<String, String> httpContentResponses= getAPIData(elementsArrays);
+    private DefaultCategoryDataset createDataset(ETFCurves etfCurves) {
 
-        // create ETFCurves object.
-        ETFCurves etfCurves = createETFCurves(httpContentResponses, elementsArrays);
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        driver.close();
-        driver.quit();
-
-        // print curves out for verification
-        System.out.println("My curves "+ etfCurves.getCurves().size());
-        for (ETFCurve curve : etfCurves.getCurves()) {
-            System.out.println(curve.toString().substring(0,100));
+        for (ETFCurve curve : etfCurves.getCurves()) { // for each curve
+            for (ETFPoint point: curve.getCurveData()) { // for each point in a curve
+                dataset.addValue(point.getPrice(), curve.getCurveId(), point.getClosingDate().toString());
+            }
         }
 
-        showGraphWindow(etfCurves);
+        return dataset;
     }
 }
