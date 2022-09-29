@@ -37,10 +37,13 @@ public class LaunchBrowser extends JFrame {
     public static String dir = System.getProperty("user.dir"); //Getting user Directory
     public static String chromedriver = dir + "/drivers/chromedriver";//creating Chromedriver Directory
 
+    public static int n = 1;
+
     public LaunchBrowser(String title, ETFCurves etfCurves) {
         super(title);
         // Create dataset
         DefaultCategoryDataset dataset = createDataset(etfCurves);
+
         // Create chart
         JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, false, false);
 
@@ -52,8 +55,8 @@ public class LaunchBrowser extends JFrame {
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (ETFCurve curve : etfCurves.getCurves()) {
-            for (ETFPoint point: curve.getCurveData()) {
+        for (ETFCurve curve : etfCurves.getCurves()) { // for each curve
+            for (ETFPoint point: curve.getCurveData()) { // for each point in a curve
                 dataset.addValue(point.getPrice(), curve.getCurveId(), point.getClosingDate().toString());
             }
         }
@@ -104,8 +107,6 @@ public class LaunchBrowser extends JFrame {
             }
             conn.disconnect();
             scanner.close();
-            // todo - check what structure is this inline. im suspecting something fishy here.
-            System.out.println("######row " + inline.substring(5));
             return inline;
         }
     }
@@ -165,7 +166,7 @@ public class LaunchBrowser extends JFrame {
             String fundName = fundNames.get(i).getText();
             String fundCode = fundTags.get(i).getAttribute("data-jsecode");
             String fundDataTargetCode = fundTags.get(i).getAttribute("data-target");
-            String fundId = fundName + " - " + fundCode;
+            String fundId = fundCode + " - " + fundName;
 
             String fundData = getHttpContentResponse(fundDataTargetCode);
             responses.put(fundId, fundData);
@@ -192,22 +193,21 @@ public class LaunchBrowser extends JFrame {
         // get browser elements needed
         Map<String, List<WebElement>> elementsArrays = getWebElements();
 
-        // get api data as row strings in an array
-        // todo - check if the data you get from the api is correct. im suspecting something
+        // get api data as strings in an array
         Map<String, String> httpContentResponses= getAPIData(elementsArrays);
 
-//        // create ETFCurves object.
-//        ETFCurves etfCurves = createETFCurves(httpContentResponses, elementsArrays);
-//
-//        driver.close();
-//        driver.quit();
-//
-//        System.out.println("My curves "+ etfCurves.getCurves().size());
-//        for (ETFCurve curve : etfCurves.getCurves()) {
-//            System.out.println(curve.toString());
-//            System.out.println("########################################################################################################################");
-//        }
-//
-//        showGraphWindow(etfCurves);
+        // create ETFCurves object.
+        ETFCurves etfCurves = createETFCurves(httpContentResponses, elementsArrays);
+
+        driver.close();
+        driver.quit();
+
+        // print curves out for verification
+        System.out.println("My curves "+ etfCurves.getCurves().size());
+        for (ETFCurve curve : etfCurves.getCurves()) {
+            System.out.println(curve.toString().substring(0,100));
+        }
+
+        showGraphWindow(etfCurves);
     }
 }
