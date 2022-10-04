@@ -19,9 +19,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class LaunchBrowser extends JFrame {
@@ -53,7 +56,7 @@ public class LaunchBrowser extends JFrame {
             System.out.println(curve.toString().substring(0,100));
         }
 
-        showGraphWindow(etfCurves);
+        new LaunchBrowser("Funds ", etfCurves);
     }
 
     public static void setUpBrowser() { // create options and driver
@@ -85,7 +88,7 @@ public class LaunchBrowser extends JFrame {
 
         Map<String, String> responses = new HashMap<>();
 
-        for (int i=0; i<fundTags.size(); i++) {
+        for (int i=0; i<1; i++) { // (int i=0; i<fundTags.size(); i++)
 
             String fundName = fundNames.get(i).getText();
             String fundCode = fundTags.get(i).getAttribute("data-jsecode");
@@ -166,37 +169,66 @@ public class LaunchBrowser extends JFrame {
         return point;
     }
 
-    public static void showGraphWindow(ETFCurves etfCurves) {
-        SwingUtilities.invokeLater(() -> {
-            LaunchBrowser window = new LaunchBrowser("Fund Line Chart", etfCurves);
-            window.setAlwaysOnTop(true);
-            window.pack();
-            window.setSize(600, 400);
-            window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            window.setVisible(true);
-        });
-    }
-
     public LaunchBrowser(String title, ETFCurves etfCurves) {
-        super(title);
+
         // Create dataset
         DefaultCategoryDataset dataset = createDataset(etfCurves);
-
         // Create chart
-        JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, false, false);
+        JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, true, false);
 
-        ChartPanel panel = new ChartPanel(chart);
-        setContentPane(panel);
+        ChartPanel chartPanel = new ChartPanel(chart);
+
+        setTitle(title);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(0,0,400,400);
+        setLayout(new BorderLayout());
+        setLocationRelativeTo(null);
+        Border border = BorderFactory.createLineBorder(Color.black);
+        Container container = getContentPane();
+
+        JPanel graphPanel = new JPanel();
+        graphPanel.setLayout(new java.awt.BorderLayout());
+        graphPanel.setPreferredSize(new Dimension(200, 200));
+        graphPanel.add(chartPanel);
+
+        JPanel statsPanel=new JPanel();
+        statsPanel.setLayout(new java.awt.BorderLayout());
+        statsPanel.setPreferredSize(new Dimension(200, 100));
+        StringBuilder sb = new StringBuilder();
+        // center the text in html maybe it will center in the panel
+        sb.append("<html> <h4>Statistics</h4> <br/>").
+                append("Gradient: 0.6 <br/>").
+                append("Variation: 0.2</html>");
+        JLabel label=new JLabel(sb.toString());
+        statsPanel.add(label);
+
+        JPanel fundPanel = new JPanel();
+        fundPanel.setLayout(new BoxLayout(fundPanel, BoxLayout.Y_AXIS));
+        fundPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        fundPanel.setPreferredSize(new Dimension(200, 300));
+        fundPanel.add(graphPanel);
+        fundPanel.add(statsPanel);
+        fundPanel.setBorder(border);
+
+        container.add(fundPanel);
+
+        setVisible(true);
     }
 
     private DefaultCategoryDataset createDataset(ETFCurves etfCurves) {
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
+        List<ETFPoint> curveData;
         for (ETFCurve curve : etfCurves.getCurves()) { // for each curve
             for (ETFPoint point: curve.getCurveData()) { // for each point in a curve
                 dataset.addValue(point.getPrice(), curve.getCurveId(), point.getClosingDate().toString());
             }
+//            curveData = curve.getCurveData();
+//            int divider = curveData.size() / curveData.size();
+//            for (int i = 0; i < curveData.size(); i=i+divider) {
+//                dataset.addValue(curveData.get(i).getPrice(), curve.getCurveId(), curveData.get(i).getClosingDate().toString());
+//            }
         }
 
         return dataset;
