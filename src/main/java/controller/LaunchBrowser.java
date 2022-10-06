@@ -52,9 +52,9 @@ public class LaunchBrowser extends JFrame {
 
         // print curves out for verification
         System.out.println("My curves "+ etfCurves.getCurves().size());
-        for (ETFCurve curve : etfCurves.getCurves()) {
-            System.out.println(curve.toString().substring(0,100));
-        }
+//        for (ETFCurve curve : etfCurves.getCurves()) {
+//            System.out.println(curve.toString().substring(0,100));
+//        }
 
         new LaunchBrowser("Funds ", etfCurves);
     }
@@ -88,7 +88,7 @@ public class LaunchBrowser extends JFrame {
 
         Map<String, String> responses = new HashMap<>();
 
-        for (int i=0; i<1; i++) { // (int i=0; i<fundTags.size(); i++)
+        for (int i=0; i<fundTags.size(); i++) {
 
             String fundName = fundNames.get(i).getText();
             String fundCode = fundTags.get(i).getAttribute("data-jsecode");
@@ -171,20 +171,35 @@ public class LaunchBrowser extends JFrame {
 
     public LaunchBrowser(String title, ETFCurves etfCurves) {
 
+        setTitle(title);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setBounds(0,0,400,400);
+        //setLayout(new BorderLayout());
+        //setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        JPanel grandPanel = new JPanel();
+        grandPanel.setLayout(new GridLayout(15,0));
+
+        for(ETFCurve etfCurve : etfCurves.getCurves()) {
+            JPanel fundPanel = createFundPanel(etfCurve);
+            grandPanel.add(fundPanel);
+        }
+
+        add(BorderLayout.CENTER, new JScrollPane(grandPanel));
+
+        setVisible(true);
+    }
+
+    private JPanel createFundPanel(ETFCurve etfCurve) {
         // Create dataset
-        DefaultCategoryDataset dataset = createDataset(etfCurves);
+        DefaultCategoryDataset dataset = createDataset(etfCurve);
         // Create chart
         JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, true, false);
 
         ChartPanel chartPanel = new ChartPanel(chart);
 
-        setTitle(title);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0,0,400,400);
-        setLayout(new BorderLayout());
-        setLocationRelativeTo(null);
         Border border = BorderFactory.createLineBorder(Color.black);
-        Container container = getContentPane();
 
         JPanel graphPanel = new JPanel();
         graphPanel.setLayout(new java.awt.BorderLayout());
@@ -204,31 +219,21 @@ public class LaunchBrowser extends JFrame {
 
         JPanel fundPanel = new JPanel();
         fundPanel.setLayout(new BoxLayout(fundPanel, BoxLayout.Y_AXIS));
-        fundPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //fundPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
         fundPanel.setPreferredSize(new Dimension(200, 300));
         fundPanel.add(graphPanel);
         fundPanel.add(statsPanel);
         fundPanel.setBorder(border);
 
-        container.add(fundPanel);
-
-        setVisible(true);
+        return fundPanel;
     }
 
-    private DefaultCategoryDataset createDataset(ETFCurves etfCurves) {
+    private DefaultCategoryDataset createDataset(ETFCurve etfCurve) {
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        List<ETFPoint> curveData;
-        for (ETFCurve curve : etfCurves.getCurves()) { // for each curve
-            for (ETFPoint point: curve.getCurveData()) { // for each point in a curve
-                dataset.addValue(point.getPrice(), curve.getCurveId(), point.getClosingDate().toString());
-            }
-//            curveData = curve.getCurveData();
-//            int divider = curveData.size() / curveData.size();
-//            for (int i = 0; i < curveData.size(); i=i+divider) {
-//                dataset.addValue(curveData.get(i).getPrice(), curve.getCurveId(), curveData.get(i).getClosingDate().toString());
-//            }
+        for (ETFPoint point: etfCurve.getCurveData()) { // for each point in a curve
+            dataset.addValue(point.getPrice(), etfCurve.getCurveId(), point.getClosingDate().toString());
         }
 
         return dataset;
