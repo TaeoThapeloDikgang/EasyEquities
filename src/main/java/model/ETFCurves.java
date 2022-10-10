@@ -3,7 +3,6 @@ package model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ETFCurves {
     @JsonProperty("curves")
@@ -13,8 +12,6 @@ public class ETFCurves {
         this.curves = curves;
     }
 
-    //ArrayList<ETFCurve>();
-
     public ArrayList<ETFCurve> getCurves() {
         return curves;
     }
@@ -22,9 +19,4 @@ public class ETFCurves {
     public void setCurves(ArrayList<ETFCurve> curves) {
         this.curves = curves;
     }
-
-//    @Override
-//    public String toString() {
-//        return Arrays.deepToString(curves);
-//    }
 }

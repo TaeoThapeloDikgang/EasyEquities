@@ -23,6 +23,9 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -151,15 +154,29 @@ public class LaunchBrowser extends JFrame {
 
     public static ETFCurve createETFCurve(JSONArray jsonArray, String fundId, String fundDataString) throws Exception {
         ArrayList<ETFPoint> fundDataArray = new ArrayList<ETFPoint>();
+        int dataSize = jsonArray.length();
         if (jsonArray != null) {
             //Iterating JSON array
-            for (int j = 0; j<jsonArray.length();j++){
+            for (int j = 0; j<dataSize;j++){
                 String jsonString = jsonArray.get(j).toString();
                 ETFPoint point = createETFPointFromJsonString(jsonString);
                 fundDataArray.add(point);
             }
         }
         ETFCurve curve = new ETFCurve(fundId, fundDataArray, fundDataString);
+
+        ETFPoint firstPoint = (fundDataArray.get(0));
+        ETFPoint lastPoint = (fundDataArray.get(dataSize-1));
+
+        long x1 = firstPoint.getClosingDate().getYear();
+        long x2 = lastPoint.getClosingDate().getYear();
+        double y1 = firstPoint.getPrice() / 1000;
+        double y2 = lastPoint.getPrice() / 1000;
+
+        Double gradient = (y2-y1) / (x2-x1);
+        double roundOff = (double) Math.round(gradient*100)/100;
+
+        curve.setGradient(roundOff);
 
         return curve;
     }
@@ -171,11 +188,11 @@ public class LaunchBrowser extends JFrame {
 
     public LaunchBrowser(String title, ETFCurves etfCurves) {
 
+
+        Collections.sort(etfCurves.getCurves());
+
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //setBounds(0,0,400,400);
-        //setLayout(new BorderLayout());
-        //setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         JPanel grandPanel = new JPanel();
@@ -212,14 +229,13 @@ public class LaunchBrowser extends JFrame {
         StringBuilder sb = new StringBuilder();
         // center the text in html maybe it will center in the panel
         sb.append("<html> <h4>Statistics</h4> <br/>").
-                append("Gradient: 0.6 <br/>").
+                append("Gradient: " + etfCurve.getGradient() + "<br/>").
                 append("Variation: 0.2</html>");
         JLabel label=new JLabel(sb.toString());
         statsPanel.add(label);
 
         JPanel fundPanel = new JPanel();
         fundPanel.setLayout(new BoxLayout(fundPanel, BoxLayout.Y_AXIS));
-        //fundPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
         fundPanel.setPreferredSize(new Dimension(200, 300));
         fundPanel.add(graphPanel);
         fundPanel.add(statsPanel);

@@ -7,6 +7,9 @@
     <list default="true" id="f0dc4544-80a2-41e8-adb5-774280e4e280" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/controller/LaunchBrowser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/controller/LaunchBrowser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/ETFCurve.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/ETFCurve.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/ETFCurves.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/ETFCurves.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/ETFPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/ETFPoint.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +120,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664912312823</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Created multiple graphs with dummy stats">
+      <created>1665081511454</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1665081511454</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -128,7 +138,8 @@
     <MESSAGE value="checked the validity of the data reserved." />
     <MESSAGE value="ordering the methods sequentially for easy reading" />
     <MESSAGE value="Created a single graph with dummy stats" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created a single graph with dummy stats" />
+    <MESSAGE value="Created multiple graphs with dummy stats" />
+    <option name="LAST_COMMIT_MESSAGE" value="Created multiple graphs with dummy stats" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

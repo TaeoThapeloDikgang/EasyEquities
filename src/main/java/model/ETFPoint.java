@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ETFPoint {
     @JsonProperty("Price")
@@ -38,9 +36,4 @@ public class ETFPoint {
     public void setClosingDate(LocalDate closingDate) {
         this.closingDate = closingDate;
     }
-
-//    @Override
-//    public String toString() {
-//        return "Price: " + price + ", ClosingDate: " + closingDate;
-//    }
 }
