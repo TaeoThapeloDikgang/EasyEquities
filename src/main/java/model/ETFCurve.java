@@ -53,9 +53,12 @@ public class ETFCurve implements Comparable<ETFCurve> {
 
     @Override
     public int compareTo(ETFCurve curve) {
-        if(this.gradient > curve.getGradient()) return -1;
-        else if (this.gradient == curve.getGradient()) return 0;
-        else return 1;
+        if(this.gradient > curve.getGradient())
+            return -1;
+        else if (this.gradient < curve.getGradient())
+            return 1;
+        else
+            return 0;
     }
 
     @Override
