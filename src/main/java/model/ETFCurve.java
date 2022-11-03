@@ -11,7 +11,7 @@ public class ETFCurve implements Comparable<ETFCurve> {
     private ArrayList<ETFPoint> curveData;
     private String curveString;
     private Double gradient;
-    private Double variation;
+    private Double standardDeviation;
 
     public ETFCurve(@JsonProperty("curveId") String curveId, @JsonProperty("curveData") ArrayList<ETFPoint> curveData, String curveString) {
         this.curveId = curveId;
@@ -43,12 +43,12 @@ public class ETFCurve implements Comparable<ETFCurve> {
         this.gradient = gradient;
     }
 
-    public Double getVariation() {
-        return variation;
+    public Double getStandardDeviation() {
+        return standardDeviation;
     }
 
-    public void setVariation(Double variation) {
-        this.variation = variation;
+    public void setStandardDeviation(Double standardDeviation) {
+        this.standardDeviation = standardDeviation;
     }
 
     @Override

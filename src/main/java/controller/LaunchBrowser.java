@@ -10,6 +10,9 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
@@ -23,9 +26,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -155,12 +155,16 @@ public class LaunchBrowser extends JFrame {
     public static ETFCurve createETFCurve(JSONArray jsonArray, String fundId, String fundDataString) throws Exception {
         ArrayList<ETFPoint> fundDataArray = new ArrayList<ETFPoint>();
         int dataSize = jsonArray.length();
+
+        double sumOfValues = 0;
         if (jsonArray != null) {
             //Iterating JSON array
             for (int j = 0; j<dataSize;j++){
                 String jsonString = jsonArray.get(j).toString();
                 ETFPoint point = createETFPointFromJsonString(jsonString);
                 fundDataArray.add(point);
+
+                sumOfValues += point.getPrice();
             }
         }
         ETFCurve curve = new ETFCurve(fundId, fundDataArray, fundDataString);
@@ -176,7 +180,16 @@ public class LaunchBrowser extends JFrame {
         Double gradient = (y2-y1) / (x2-x1);
         double roundOff = (double) Math.round(gradient*100)/100;
 
+        double mean = sumOfValues / dataSize;
+
+        double variance = 0;
+        for(int j = 0; j<dataSize;j++) {
+            variance +=  Math.pow((fundDataArray.get(j).getPrice() - mean), 2);
+        }
+        double stdDeviation = Math.sqrt(variance);
+
         curve.setGradient(roundOff);
+        curve.setStandardDeviation(stdDeviation);
 
         return curve;
     }
@@ -209,10 +222,18 @@ public class LaunchBrowser extends JFrame {
     }
 
     private JPanel createFundPanel(ETFCurve etfCurve) {
-        // Create dataset
-        DefaultCategoryDataset dataset = createDataset(etfCurve);
-        // Create chart
-        JFreeChart chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, true, false);
+
+        boolean isLineGraph = true;
+
+        JFreeChart chart;
+        if (isLineGraph) {
+            DefaultCategoryDataset dataset = createLineGraphDataset(etfCurve);
+            chart = ChartFactory.createLineChart("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, true, false);
+        }
+        else {
+            XYDataset dataset = createScatterPlotDataset(etfCurve);
+            chart = ChartFactory.createScatterPlot("EFTs Comparison", "Date", "Price", dataset, PlotOrientation.VERTICAL, true, true, false);
+        }
 
         ChartPanel chartPanel = new ChartPanel(chart);
 
@@ -230,7 +251,7 @@ public class LaunchBrowser extends JFrame {
         // center the text in html maybe it will center in the panel
         sb.append("<html> <h4>Statistics</h4> <br/>").
                 append("Gradient: " + etfCurve.getGradient() + "<br/>").
-                append("Variation: 0.2</html>");
+                append("Variance: " + etfCurve.getStandardDeviation() +  "</html>");
         JLabel label=new JLabel(sb.toString());
         statsPanel.add(label);
 
@@ -244,7 +265,7 @@ public class LaunchBrowser extends JFrame {
         return fundPanel;
     }
 
-    private DefaultCategoryDataset createDataset(ETFCurve etfCurve) {
+    private DefaultCategoryDataset createLineGraphDataset(ETFCurve etfCurve) {
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -252,6 +273,22 @@ public class LaunchBrowser extends JFrame {
             dataset.addValue(point.getPrice(), etfCurve.getCurveId(), point.getClosingDate().toString());
         }
 
+        return dataset;
+    }
+
+    private XYDataset createScatterPlotDataset(ETFCurve etfCurve) {
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+
+        XYSeries series = new XYSeries(etfCurve.getCurveId());
+
+        int current = 1;
+
+        for (ETFPoint point: etfCurve.getCurveData()) { // for each point in a curve
+            series.add(++current, point.getPrice());
+        }
+
+        dataset.addSeries(series);
         return dataset;
     }
 }

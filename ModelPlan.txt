@@ -1,21 +1,23 @@
-// todo - using java show only one graph and calculate the trend and variation and put it next to the graph
-// todo - create multiple graphs, one for each fund and put them next to each other
-// todo - sort the graphs by the most positive trends and variation
-// todo - create a resful api, package, and deploy using wildlfy
-// todo - check if you can host the application online so it runs everytime to monitor the data
+Model Blueprint
 
+Create an object ETFPoint with attribute, closing date and price
+- DateTime closingDate;
+- Double price
 
-// create an object ETFPoint with attribute, closing date and price
-// DateTime closingDate;
-// Double price
+Create an object ETFCurve with these attributes, curve name and an array that stores prices,
+- curveIdentity
+- ArrayList<ETFPoint> curveData;
+- curve Gradient
+- curve standard deviation
 
-// create an object ETFCurve with two attributes, curve name and an array that stores prices,
-// curveIdentity
-// ArrayList<ETFPoint> curveData;
+Create ETFCurves with one attribute, an array that stores array
+- ArrayList<ETFCurve> curves
 
-// create ETFCurves with one attribute, an array that stores array
-// ArrayList<ETFCurve> curves
+TODO - NEXT
+- * Todo - using java show only one graph and calculate the trend and variation and put it next to the graph
+- * Todo - create multiple graphs, one for each fund and put them next to each other
+- * Todo - sort the graphs by the most positive trends and variation
+- Todo - find another way to find the most positive graph, gradient and variations are not enough
+- Todo - create a resful api, package, and deploy using wildlfy
+- Todo - check if you can host the application online so it runs everytime to monitor the data
 
-// clean the code an build functions
-// you have the data and you can drawn a graph. you can start with you calculations and show any trends on the graph.
-// you can use angular to link everything to the ui and myabe host at a later stage
